@@ -1,6 +1,6 @@
 {
     "name": "@zonlykroks/esits",
-    "version": "4.1.3-1",
+    "version": "0.1.0",
     "type": "module",
     "description": "Modern TypeScript EVE ESI API wrapper - Complete EVE Online ESI (EVE Swagger Interface) client with TypeScript support, ETag caching, and comprehensive endpoint coverage.",
     "main": "dist/class.js",
