@@ -123,7 +123,7 @@ jobs:
           echo "Package info:"
           npm pack --dry-run
           echo "Publishing to npm:"
-          npm publish --tag ${{ github.event.inputs.tag }} --verbose
+          npm publish --tag ${{ github.event.inputs.tag }} --access public --verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -145,12 +145,12 @@ jobs:
 
             ### Installation
             ```bash
-            npm install eve-esi-client@${{ steps.version.outputs.new_version }}
+            npm install @zonlykroks/eve-esi-client@${{ steps.version.outputs.new_version }}
             ```
 
             ### Usage
             ```javascript
-            const ESIJS = require('eve-esi-client');
+            const ESIJS = require('@zonlykroks/eve-esi-client');
             const esi = new ESIJS({ logging: true });
 
             // Example: Get server status

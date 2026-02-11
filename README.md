@@ -7,13 +7,13 @@ This is a maintained, typescript alternative to outdated esiJS libraries. Many t
 ## Installing
 
 ```bash
-npm install eve-esi-client
+npm install @zonlykroks/eve-esi-client
 ```
 
 ## Usage
 
 ```js
-const ESIJS = require('eve-esi-client')
+const ESIJS = require('@zonlykroks/eve-esi-client')
 const esi = new ESIJS({})
 
 // Use all functions like this:
@@ -77,7 +77,7 @@ const skills = await esi.skills.skills(characterId)
 ## TypeScript
 
 ```typescript
-import ESIJS from 'eve-esi-client'
+import ESIJS from '@zonlykroks/eve-esi-client'
 
 const esi = new ESIJS()
 const response = await esi.character.info(123456789)
