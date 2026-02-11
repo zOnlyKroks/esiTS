@@ -29,14 +29,13 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src/**/*",
-    "*.js",
-    "*.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
     "docs",
-    "test.js"
+    "test*.js",
+    "eslint.config.js"
   ]
 }
