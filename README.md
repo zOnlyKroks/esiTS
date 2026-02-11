@@ -1,37 +1,85 @@
-# esiTS
+# @zonlykroks/esits
 
-esiTS is a updated module for the EVE Online ESI. It makes getting data from the ESI much easier, avoids cluttering your code with HTTP requests, and is small and powerful.
+Modern TypeScript EVE ESI API wrapper. Makes getting data from the ESI much easier, avoids cluttering your code with HTTP requests, and is small and powerful.
 
-## This is a maintained, typescript alternative to the outdated https://github.com/0xf0xx0/esiJS. Many thanks go to the original creator of this tool, on which my work here depends.
+This is a maintained, typescript alternative to outdated esiJS libraries. Many thanks go to the original creators of these tools, on which this work depends.
 
-# INSTALLING:
+## Installing
 
 ```bash
-npm i esijs
+npm install @zonlykroks/esits
 ```
 
-# USAGE:
+## Usage
 
 ```js
-const esiJS = require('esijs')
-const esiClient = new esiJS({})
-// Use all functions like this:
-esiClient.group.<subgroup>.function()
-    .then(r => {
-        let headers = r.headers
-        let data = r.data
+const ESIJS = require('@zonlykroks/esits')
+const esi = new ESIJS({})
 
-        // do something with headers and data
+// Use all functions like this:
+esi.status.status()
+    .then(response => {
+        let headers = response.headers
+        let data = response.data
+
+        console.log(`${data.players} players online`)
     })
-    .catch(e => { // .then/.catch is used when you don't await a function
-        // whatever you want to do with errors
+    .catch(error => {
+        console.error('Error:', error.message)
     })
-// Or like this:
+
+// Or with async/await:
 try {
-    let data = await esiClient.group.<subgroup>.function()
-} catch(e) { // try/catch is used when you await a function
-    // Error? What error?
+    let response = await esi.universe.regions.regions()
+    console.log(`Found ${response.data.length} regions`)
+} catch(error) {
+    console.error('Error:', error.message)
 }
 ```
 
-Please view the `docs/` directory for the documentation on each group.
+## Authentication
+
+For endpoints requiring authentication, provide your access token:
+
+```js
+const esi = new ESIJS({
+    token: 'your-esi-access-token-here'
+})
+
+// Now you can access authenticated endpoints
+const wallet = await esi.wallet.character.balance(characterId)
+const skills = await esi.skills.skills(characterId)
+```
+
+## Available Modules
+
+- `alliance` - Alliance information
+- `character` - Character data, assets, contacts, mail, etc.
+- `corporation` - Corporation information and member data
+- `universe` - Static universe data (regions, systems, types, etc.)
+- `market` - Market orders and pricing data
+- `wallet` - Wallet operations
+- `skills` - Character skills and training queue
+- `mail` - Mail system
+- `location` - Character location and ship info
+- `status` - Server status
+- `wars` - War information
+- And more...
+
+## Features
+
+- Full TypeScript support with type definitions
+- Automatic ETag caching to reduce API calls
+- Comprehensive endpoint coverage
+- Modern async/await support
+- Error handling
+
+## TypeScript
+
+```typescript
+import ESIJS from '@zonlykroks/esits'
+
+const esi = new ESIJS()
+const response = await esi.character.info(123456789)
+console.log(response.data.name) // Fully typed
+```

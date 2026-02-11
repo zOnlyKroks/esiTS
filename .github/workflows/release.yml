@@ -82,6 +82,10 @@ jobs:
             rm dist/package.json
           fi
           cp package.json dist/
+          echo "Contents of dist directory:"
+          ls -la dist/
+          echo "Contents of dist/package.json:"
+          cat dist/package.json | head -10
 
       - name: Create Git tag
         run: |
@@ -91,10 +95,17 @@ jobs:
           git push origin master
           git push origin ${{ steps.version.outputs.new_version }}
 
-      - name: Publish to NPM
+      - name: Verify npm auth and publish
         run: |
           cd dist
-          npm publish --tag ${{ github.event.inputs.tag }} --access=public
+          echo "NPM registry configuration:"
+          npm config list
+          echo "Checking npm auth:"
+          npm whoami || echo "Not authenticated yet"
+          echo "Package info:"
+          npm pack --dry-run
+          echo "Publishing to npm:"
+          npm publish --tag ${{ github.event.inputs.tag }} --access=public --verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
