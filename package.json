@@ -1,6 +1,7 @@
 {
     "name": "esits",
     "version": "4.1.3-1",
+    "type": "module",
     "description": "Modern TypeScript EVE ESI API wrapper - Complete EVE Online ESI (EVE Swagger Interface) client with TypeScript support, ETag caching, and comprehensive endpoint coverage.",
     "main": "dist/class.js",
     "types": "dist/class.d.ts",
@@ -47,15 +48,15 @@
     },
     "homepage": "https://github.com/zOnlyKroks/esiTS#readme",
     "devDependencies": {
+        "@eslint/js": "^9.15.0",
         "@types/node": "^22.0.0",
-        "@typescript-eslint/eslint-plugin": "^8.55.0",
-        "@typescript-eslint/parser": "^8.55.0",
         "documentation": "^14.0.3",
         "eslint": "^9.15.0",
         "nodemon": "^3.0.0",
         "prettier": "^3.8.1",
         "rimraf": "^6.0.1",
         "tsx": "^4.21.0",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.55.0"
     }
 }

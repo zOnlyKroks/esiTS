@@ -98,11 +98,11 @@ export class ESIJS implements ESIClient {
           try {
             log(`I can read it! Checking if I can write into it...`, 'INFO')
             fs.accessSync(projectConfig, fs.constants.W_OK)
-          } catch (e) {
+          } catch (_e) {
             log(`Couldn't write to 'esi.json', reverting to default configuration`, 'WARNING')
             return
           }
-        } catch (e) {
+        } catch (_e) {
           log(`Couldn't read config file, reverting to default configuration`, 'WARNING')
           return
         }
@@ -122,7 +122,7 @@ export class ESIJS implements ESIClient {
         }
         return
       }
-    } catch (e) {
+    } catch (_e) {
       return
     }
 

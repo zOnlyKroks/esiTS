@@ -252,11 +252,11 @@ export function checkForConfig(logging?: boolean): boolean {
         // ...then see if we can write into it
         try {
           fs.accessSync(projectConfig, fs.constants.W_OK)
-        } catch (e) {
+        } catch (_e) {
           localLog(`Couldn't write to 'esi.json', reverting to default configuration`, 'WARNING')
           return false
         }
-      } catch (e) {
+      } catch (_e) {
         localLog(`Couldn't read config file, reverting to default configuration`, 'WARNING')
         return false
       }
@@ -275,7 +275,7 @@ export function checkForConfig(logging?: boolean): boolean {
       }
       return false
     }
-  } catch (e) {
+  } catch (_e) {
     return false
   }
   localLog(`I can read the config file!`, 'INFO')
