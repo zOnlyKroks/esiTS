@@ -1,0 +1,127 @@
+name: Release to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version type (patch, minor, major) or specific version (e.g., 1.2.3)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      tag:
+        description: 'NPM dist-tag (latest, beta, alpha, etc.)'
+        required: false
+        default: 'latest'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Run tests (if available)
+        run: |
+          if [ -f "test-basic.js" ]; then
+            node test-basic.js
+          else
+            echo "No tests found, skipping test step"
+          fi
+        continue-on-error: false
+
+      - name: Bump version
+        id: version
+        run: |
+          if [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+            # Specific version provided
+            npm version ${{ github.event.inputs.version }} --no-git-tag-version
+            echo "new_version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            # Version type provided (patch, minor, major)
+            NEW_VERSION=$(npm version ${{ github.event.inputs.version }} --no-git-tag-version)
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update package.json in dist
+        run: |
+          if [ -f "dist/package.json" ]; then
+            rm dist/package.json
+          fi
+          cp package.json dist/
+
+      - name: Create Git tag
+        run: |
+          git add package.json package-lock.json
+          git commit -m "Release ${{ steps.version.outputs.new_version }}"
+          git tag ${{ steps.version.outputs.new_version }}
+          git push origin master
+          git push origin ${{ steps.version.outputs.new_version }}
+
+      - name: Publish to NPM
+        run: |
+          cd dist
+          npm publish --tag ${{ github.event.inputs.tag }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.new_version }}
+          release_name: Release ${{ steps.version.outputs.new_version }}
+          body: |
+            ## Changes in this Release
+
+            - Modern TypeScript ESI API wrapper for EVE Online
+            - Added new modules: Wallet, Skills, Mail, Location
+            - Updated dependencies to latest versions
+            - Improved TypeScript type definitions
+            - Enhanced ETag caching system
+
+            ### Installation
+            ```bash
+            npm install esits@${{ steps.version.outputs.new_version }}
+            ```
+
+            ### Usage
+            ```javascript
+            const ESIJS = require('esits');
+            const esi = new ESIJS({ logging: true });
+
+            // Example: Get server status
+            const status = await esi.status.status();
+            console.log(`${status.data.players} players online`);
+            ```
+          draft: false
+          prerelease: ${{ github.event.inputs.tag != 'latest' }}

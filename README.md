@@ -2,7 +2,7 @@
 
 esiJS is a updated module for the EVE Online ESI. It makes getting data from the ESI much easier, avoids cluttering your code with HTTP requests, and is small and powerful.
 
-## adopted by @zOnlyKroks, there may be a TS alternative coming soon as well :3 -> See https://github.com/zOnlyKroks/esiTS
+## This is a maintained, typescript alternative to the outdated https://github.com/0xf0xx0/esiJS. Many thanks go to the original creator of this tool, on which my work here depends.
 
 # INSTALLING:
 
@@ -35,9 +35,3 @@ try {
 ```
 
 Please view the `docs/` directory for the documentation on each group.
-
-# TODO
-
-find maintainers that play the game lol, my email is on my site  
-use etags for caching?  
-roll everything under the class so they can use `this`  
