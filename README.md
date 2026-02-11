@@ -1,4 +1,4 @@
-# @zonlykroks/esits
+# eve-esi-client
 
 Modern TypeScript EVE ESI API wrapper. Makes getting data from the ESI much easier, avoids cluttering your code with HTTP requests, and is small and powerful.
 
@@ -7,13 +7,13 @@ This is a maintained, typescript alternative to outdated esiJS libraries. Many t
 ## Installing
 
 ```bash
-npm install @zonlykroks/esits
+npm install eve-esi-client
 ```
 
 ## Usage
 
 ```js
-const ESIJS = require('@zonlykroks/esits')
+const ESIJS = require('eve-esi-client')
 const esi = new ESIJS({})
 
 // Use all functions like this:
@@ -77,7 +77,7 @@ const skills = await esi.skills.skills(characterId)
 ## TypeScript
 
 ```typescript
-import ESIJS from '@zonlykroks/esits'
+import ESIJS from 'eve-esi-client'
 
 const esi = new ESIJS()
 const response = await esi.character.info(123456789)
