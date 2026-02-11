@@ -67,9 +67,15 @@ jobs:
         id: version
         run: |
           if [[ -n "${{ github.event.inputs.custom_version }}" ]]; then
-            # Custom version provided - use it directly
-            npm version ${{ github.event.inputs.custom_version }} --no-git-tag-version
-            echo "new_version=${{ github.event.inputs.custom_version }}" >> $GITHUB_OUTPUT
+            # Custom version provided - check if it's different from current
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            if [[ "$CURRENT_VERSION" != "${{ github.event.inputs.custom_version }}" ]]; then
+              npm version ${{ github.event.inputs.custom_version }} --no-git-tag-version
+              echo "new_version=${{ github.event.inputs.custom_version }}" >> $GITHUB_OUTPUT
+            else
+              echo "Version already set to ${{ github.event.inputs.custom_version }}, skipping version bump"
+              echo "new_version=${{ github.event.inputs.custom_version }}" >> $GITHUB_OUTPUT
+            fi
           else
             # Use version type bump (patch, minor, major)
             NEW_VERSION=$(npm version ${{ github.event.inputs.version_type }} --no-git-tag-version)
@@ -89,9 +95,21 @@ jobs:
 
       - name: Create Git tag
         run: |
-          git add package.json package-lock.json
-          git commit -m "Release ${{ steps.version.outputs.new_version }}"
-          git tag ${{ steps.version.outputs.new_version }}
+          # Check if there are changes to commit
+          if git diff --staged --quiet package.json package-lock.json; then
+            echo "No version changes to commit"
+          else
+            git add package.json package-lock.json
+            git commit -m "Release ${{ steps.version.outputs.new_version }}"
+          fi
+
+          # Create tag if it doesn't exist
+          if git tag -l "${{ steps.version.outputs.new_version }}" | grep -q "${{ steps.version.outputs.new_version }}"; then
+            echo "Tag ${{ steps.version.outputs.new_version }} already exists"
+          else
+            git tag ${{ steps.version.outputs.new_version }}
+          fi
+
           git push origin master
           git push origin ${{ steps.version.outputs.new_version }}
 
