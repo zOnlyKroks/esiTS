@@ -82,12 +82,13 @@ jobs:
             echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           fi
 
-      - name: Update package.json in dist
+      - name: Update package.json and README in dist
         run: |
           if [ -f "dist/package.json" ]; then
             rm dist/package.json
           fi
           cp package.json dist/
+          cp README.md dist/
           echo "Contents of dist directory:"
           ls -la dist/
           echo "Contents of dist/package.json:"
