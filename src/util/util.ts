@@ -124,13 +124,15 @@ export function makeRequest({
   }
   let fullURL = `${link}${subUrl}/?datasource=tranquility`
 
-  // Create cache key for ETag caching (based on URL, method, and auth status)
+  // Create cache key for ETag caching (based on URL, method, auth status, query params, and request body)
   let cacheKey = `${requestType.toUpperCase()}_${fullURL}_${needsAuth ? 'AUTH' : 'NOAUTH'}`
   if (query) {
-    cacheKey += '_' + JSON.stringify(query)
+    cacheKey += '_QUERY_' + JSON.stringify(query)
   }
   if (body) {
-    cacheKey += '_' + JSON.stringify(body)
+    // Ensure deterministic serialization for request body (especially important for arrays)
+    const bodyString = JSON.stringify(body, null, 0) // Use deterministic stringify
+    cacheKey += '_BODY_' + bodyString
   }
 
   // If query params are defined, add them to the end of the full url
@@ -158,7 +160,10 @@ export function makeRequest({
     headers['User-Agent'] += ` (for: ${projectName})`
   }
 
-  // Check for cached ETag and add If-None-Match header for GET requests
+  // ETag caching behavior:
+  // - GET requests: Use ETag caching with If-None-Match headers and 304 responses
+  // - POST/PUT/DELETE requests: Cache key includes body to differentiate requests with same URL but different payloads
+  // - This ensures that POST requests like universe.bulk.idsToNames with different ID arrays are treated as separate cache entries
   const cachedEntry = etagCache.get(cacheKey)
   if (requestType.toUpperCase() === 'GET' && cachedEntry && cachedEntry.etag) {
     headers['If-None-Match'] = cachedEntry.etag
@@ -219,8 +224,8 @@ export function makeRequest({
     })
     .catch((error: AxiosError): ESIResponse => {
       if (error.response) {
-        // Handle 304 Not Modified - return cached data
-        if (error.response.status === 304 && cachedEntry) {
+        // Handle 304 Not Modified - return cached data (only for GET requests)
+        if (error.response.status === 304 && cachedEntry && requestType.toUpperCase() === 'GET') {
           log(`Using cached data for ${subUrl} (304 Not Modified)`, 'INFO')
           return cachedEntry.data
         }
