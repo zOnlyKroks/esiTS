@@ -21,6 +21,9 @@ build/Release
 # Dependency directories
 node_modules/
 
+# Build output
+dist/
+
 # TypeScript v1 declaration files
 typings/
 
@@ -40,7 +43,9 @@ typings/
 .vscode
 
 # other
-test*
+test*.js
 .DS_Store
 ._*
-# ^ fuck macOS dotfiles
+
+# Temporary config files created during tests
+esi.json
