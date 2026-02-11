@@ -3,19 +3,24 @@ name: Release to NPM
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version type (patch, minor, major) or specific version (e.g., 1.2.3)'
-        required: true
-        default: 'patch'
+      version_type:
+        description: 'Version bump type'
+        required: false
         type: choice
         options:
           - patch
           - minor
           - major
+        default: 'patch'
+      custom_version:
+        description: 'Custom version (e.g., 1.2.3, 2.0.0-beta.1) - overrides version_type if provided'
+        required: false
+        type: string
       tag:
         description: 'NPM dist-tag (latest, beta, alpha, etc.)'
         required: false
         default: 'latest'
+        type: string
 
 jobs:
   release:
@@ -61,13 +66,13 @@ jobs:
       - name: Bump version
         id: version
         run: |
-          if [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
-            # Specific version provided
-            npm version ${{ github.event.inputs.version }} --no-git-tag-version
-            echo "new_version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          if [[ -n "${{ github.event.inputs.custom_version }}" ]]; then
+            # Custom version provided - use it directly
+            npm version ${{ github.event.inputs.custom_version }} --no-git-tag-version
+            echo "new_version=${{ github.event.inputs.custom_version }}" >> $GITHUB_OUTPUT
           else
-            # Version type provided (patch, minor, major)
-            NEW_VERSION=$(npm version ${{ github.event.inputs.version }} --no-git-tag-version)
+            # Use version type bump (patch, minor, major)
+            NEW_VERSION=$(npm version ${{ github.event.inputs.version_type }} --no-git-tag-version)
             echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           fi
 
