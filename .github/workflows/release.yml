@@ -94,7 +94,7 @@ jobs:
       - name: Publish to NPM
         run: |
           cd dist
-          npm publish --tag ${{ github.event.inputs.tag }}
+          npm publish --tag ${{ github.event.inputs.tag }} --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -116,12 +116,12 @@ jobs:
 
             ### Installation
             ```bash
-            npm install esits@${{ steps.version.outputs.new_version }}
+            npm install @zonlykroks/esits@${{ steps.version.outputs.new_version }}
             ```
 
             ### Usage
             ```javascript
-            const ESIJS = require('esits');
+            const ESIJS = require('@zonlykroks/esits');
             const esi = new ESIJS({ logging: true });
 
             // Example: Get server status

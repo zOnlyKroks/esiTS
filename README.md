@@ -1,6 +1,6 @@
-# esiJS
+# esiTS
 
-esiJS is a updated module for the EVE Online ESI. It makes getting data from the ESI much easier, avoids cluttering your code with HTTP requests, and is small and powerful.
+esiTS is a updated module for the EVE Online ESI. It makes getting data from the ESI much easier, avoids cluttering your code with HTTP requests, and is small and powerful.
 
 ## This is a maintained, typescript alternative to the outdated https://github.com/0xf0xx0/esiJS. Many thanks go to the original creator of this tool, on which my work here depends.
 
